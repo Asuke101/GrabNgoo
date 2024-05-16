@@ -1,0 +1,254 @@
+CREATE TABLE Establishment (
+    src_ID INT PRIMARY KEY,
+    name VARCHAR(255),
+    location VARCHAR(255),
+    description TEXT,
+    opening_hrs VARCHAR(255),
+    contact_info VARCHAR(255),
+    rating DECIMAL(2,1),
+    src_type CHAR(1)
+);
+
+CREATE TABLE Product (
+    product_ID INT PRIMARY KEY,
+    prod_name VARCHAR(255),
+    prod_desc TEXT,
+    prod_price DECIMAL(10,2),
+    prod_category VARCHAR(255),
+    src_ID INT,
+    FOREIGN KEY (src_ID) REFERENCES Establishment(src_ID)
+);
+
+CREATE TABLE "user" (
+    user_ID INT PRIMARY KEY,
+    user_fname VARCHAR(255),
+    user_lname VARCHAR(255),
+    user_email VARCHAR(255),
+    user_pwd VARCHAR(255)
+);
+
+CREATE TABLE "Order" (
+    order_ID INT PRIMARY KEY,
+    user_ID INT,
+    src_ID INT,
+    order_date_time TIMESTAMP,
+    ord_status VARCHAR(255),
+    FOREIGN KEY (user_ID) REFERENCES "user"(user_ID),
+    FOREIGN KEY (src_ID) REFERENCES Establishment(src_ID)
+);
+
+CREATE TABLE Cart (
+    cart_ID INT PRIMARY KEY,
+    user_ID INT,
+    product_ID INT,
+    qty INT,
+    FOREIGN KEY (user_ID) REFERENCES "user"(user_ID),
+    FOREIGN KEY (product_ID) REFERENCES Product(product_ID)
+);
+
+CREATE TABLE Payment (
+    payment_ID INT PRIMARY KEY,
+    name VARCHAR(255),
+    card_type VARCHAR(255),
+    order_ID INT,
+    FOREIGN KEY (order_ID) REFERENCES "Order"(order_ID)
+);
+
+CREATE TABLE Delivery (
+    delivery_ID INT PRIMARY KEY,
+    address VARCHAR(255),
+    contact_info VARCHAR(255),
+    order_ID INT,
+    FOREIGN KEY (order_ID) REFERENCES "Order"(order_ID)
+);
+
+CREATE TABLE Review (
+    review_ID INT PRIMARY KEY,
+    user_ID INT,
+    src_ID INT,
+    rating DECIMAL(2,1),
+    FOREIGN KEY (user_ID) REFERENCES "user"(user_ID),
+    FOREIGN KEY (src_ID) REFERENCES Establishment(src_ID)
+);
+
+CREATE TABLE Order_line (
+    Order_ID INT,
+    product_ID INT,
+    quantity INT,
+    unit_price DECIMAL(10,2),
+    PRIMARY KEY (Order_ID, product_ID),
+    FOREIGN KEY (Order_ID) REFERENCES "Order"(order_ID),
+    FOREIGN KEY (product_ID) REFERENCES Product(product_ID)
+);
+--1
+-- Inserting data into 'Establishment'
+INSERT INTO Establishment (src_ID, name, location, description, opening_hrs, contact_info, rating, src_type) VALUES
+(1, 'Gourmet Bistro', '123 Main St', 'Fine dining restaurant', '09:00-22:00', '123-456-7890', 4.5, 'R'),
+(2, 'Daily Cafe', '456 Side St', 'Casual coffee shop', '07:00-19:00', '987-654-3210', 4.0, 'C');
+
+-- Inserting data into 'Product'
+INSERT INTO Product (product_ID, prod_name, prod_desc, prod_price, prod_category, src_ID) VALUES
+(1, 'Espresso', 'Rich espresso coffee', 2.50, 'Beverages', 2),
+(2, 'Cheeseburger', 'Juicy grilled cheeseburger', 8.75, 'Food', 1);
+
+-- Inserting data into 'user'
+INSERT INTO "user" (user_ID, user_fname, user_lname, user_email, user_pwd) VALUES
+(1, 'John', 'Doe', 'john.doe@example.com', 'johndoe123'),
+(2, 'Jane', 'Smith', 'jane.smith@example.com', 'janesmith456');
+
+-- Inserting data into 'Order'
+INSERT INTO "Order (order_ID, user_ID, src_ID, order_date_time, ord_status) VALUES
+(1, 1, 1, '2024-05-17 18:30:00', 'Delivered'),
+(2, 2, 2, '2024-05-17 12:00:00', 'Pending');
+
+-- Inserting data into 'Cart'
+INSERT INTO Cart (cart_ID, user_ID, product_ID, qty) VALUES
+(1, 1, 2, 2),
+(2, 2, 1, 3);
+
+-- Inserting data into 'Payment'
+INSERT INTO Payment (payment_ID, name, card_type, order_ID) VALUES
+(1, 'John Doe', 'Visa', 1),
+(2, 'Jane Smith', 'Mastercard', 2);
+
+-- Inserting data into 'Delivery'
+INSERT INTO Delivery (delivery_ID, address, contact_info, order_ID) VALUES
+(1, '101 Upstreet, Bigtown', '111-222-3333', 1);
+
+-- Inserting data into 'Review'
+INSERT INTO Review (review_ID, user_ID, src_ID, rating) VALUES
+(1, 1, 1, 4.5),
+(2, 2, 2, 4.0);
+
+-- Inserting data into 'Order_line'
+INSERT INTO Order_line (Order_ID, product_ID, quantity, unit_price) VALUES
+(1, 2, 2, 8.75),
+(2, 1, 3, 2.50);
+
+--2
+-- More data for 'Establishment'
+INSERT INTO Establishment (src_ID, name, location, description, opening_hrs, contact_info, rating, src_type) VALUES
+(3, 'Health Nut Cafe', '789 Health St', 'Healthy meals and smoothies', '06:00-18:00', '222-333-4444', 4.8, 'C'),
+(4, 'Grill King', '321 Grill Ave', 'Barbecue and grills', '12:00-23:00', '333-444-5555', 4.2, 'R');
+
+-- More data for 'Product'
+INSERT INTO Product (product_ID, prod_name, prod_desc, prod_price, prod_category, src_ID) VALUES
+(3, 'Green Smoothie', 'Fresh kale and spinach smoothie', 5.75, 'Beverages', 3),
+(4, 'BBQ Ribs', 'Smoked ribs with a house-made BBQ sauce', 15.50, 'Food', 4),
+(5, 'Vegan Salad', 'Mixed greens with nuts and seeds', 9.50, 'Food', 3),
+(6, 'Steak', 'Grilled sirloin steak', 22.00, 'Food', 4);
+
+-- More data for 'user'
+INSERT INTO "user" (user_ID, user_fname, user_lname, user_email, user_pwd) VALUES
+(3, 'Alice', 'Wong', 'alice.wong@example.com', 'alicewong789'),
+(4, 'Bob', 'Johnson', 'bob.johnson@example.com', 'bobjohnson456');
+
+-- More data for 'Order'
+INSERT INTO "Order" (order_ID, user_ID, src_ID, order_date_time, ord_status) VALUES
+(3, 3, 3, '2024-05-18 09:15:00', 'Completed'),
+(4, 4, 4, '2024-05-18 20:45:00', 'Delivered');
+
+-- More data for 'Cart'
+INSERT INTO Cart (cart_ID, user_ID, product_ID, qty) VALUES
+(3, 3, 3, 1),
+(4, 4, 4, 2);
+
+-- More data for 'Payment'
+INSERT INTO Payment (payment_ID, name, card_type, order_ID) VALUES
+(3, 'Alice Wong', 'Visa', 3),
+(4, 'Bob Johnson', 'American Express', 4);
+
+-- More data for 'Delivery'
+INSERT INTO Delivery (delivery_ID, address, contact_info, order_ID) VALUES
+(2, '302 Crosslane, Newcity', '444-555-6666', 4);
+
+-- More data for 'Review'
+INSERT INTO Review (review_ID, user_ID, src_ID, rating) VALUES
+(3, 3, 3, 5.0),
+(4, 4, 4, 4.5);
+
+-- More data for 'Order_line'
+INSERT INTO Order_line (Order_ID, product_ID, quantity, unit_price) VALUES
+(3, 5, 1, 9.50),
+(4, 6, 2, 22.00);
+
+-- Expanding 'Establishment'
+INSERT INTO Establishment (src_ID, name, location, description, opening_hrs, contact_info, rating, src_type) VALUES
+(5, 'Morning Brew Coffee', '850 Coffee Rd', 'Your morning coffee spot', '05:00-11:00', '500-600-7000', 4.6, 'C'),
+(6, 'Tea Time Lounge', '115 Tea Blvd', 'Relax with our premium teas', '10:00-20:00', '501-601-7010', 4.3, 'C'),
+(7, 'Quick Snack', '220 Snack Dr', 'Fast food and snacks on the go', '00:00-24:00', '502-602-7020', 3.9, 'C'),
+(8, 'Fine Dining Circle', '330 Fancy Rd', 'Elegant meals in a luxurious setting', '18:00-23:00', '503-603-7030', 4.8, 'R'),
+(9, 'The Pie Shop', '440 Pie Ln', 'Homemade pies and pastries', '08:00-18:00', '504-604-7040', 4.5, 'C'),
+(10, 'Sushi Station', '550 Sushi St', 'Authentic Japanese sushi bar', '11:00-22:00', '505-605-7050', 4.7, 'R'),
+(11, 'Italiano Vero', '660 Pasta Ave', 'Traditional Italian cuisine', '12:00-22:00', '506-606-7060', 4.7, 'R'),
+(12, 'The Burger Joint', '770 Burger Blvd', 'Gourmet burgers and fries', '11:00-21:00', '507-607-7070', 4.2, 'R'),
+(13, 'Salad Kingdom', '880 Greens Cir', 'Fresh and healthy salads', '09:00-19:00', '508-608-7080', 4.6, 'C'),
+(14, 'Mexican Fiesta', '990 Taco Rd', 'Vibrant Mexican dishes', '10:00-22:00', '509-609-7090', 4.4, 'R'),
+(15, 'Ice Cream Dreams', '100 Ice Cream Ln', 'Delicious ice cream and desserts', '12:00-22:00', '510-610-7100', 4.5, 'C');
+
+-- Expanding 'Product'
+INSERT INTO Product (product_ID, prod_name, prod_desc, prod_price, prod_category, src_ID) VALUES
+(7, 'Latte', 'Smooth and creamy latte', 3.50, 'Beverages', 5),
+(8, 'Green Tea', 'Organic green tea', 2.75, 'Beverages', 6),
+(9, 'Chocolate Donut', 'Rich chocolate glazed donut', 1.50, 'Snacks', 7),
+(10, 'Lobster Bisque', 'Creamy lobster soup', 12.75, 'Food', 8),
+(11, 'Apple Pie', 'Classic apple pie with cinnamon', 3.75, 'Desserts', 9),
+(12, 'Nigiri Sushi', 'Fresh salmon over rice', 5.00, 'Food', 10),
+(13, 'Spaghetti Carbonara', 'Pasta with creamy sauce and pancetta', 11.00, 'Food', 11),
+(14, 'Cheeseburger Deluxe', 'Beef burger with cheese and special sauce', 9.75, 'Food', 12),
+(15, 'Garden Salad', 'Mixed greens with a variety of vegetables', 7.50, 'Food', 13),
+(16, 'Tacos Al Pastor', 'Spicy pork tacos with pineapple', 3.25, 'Food', 14),
+(17, 'Vanilla Ice Cream', 'Creamy vanilla ice cream', 2.50, 'Desserts', 15),
+(18, 'Cappuccino', 'Rich espresso with foamed milk', 3.75, 'Beverages', 5),
+(19, 'Herbal Tea', 'Calming blend of herbs', 2.50, 'Beverages', 6),
+(20, 'French Fries', 'Crispy golden fries', 2.00, 'Snacks', 7),
+(21, 'Steak Dinner', 'Grilled steak with side vegetables', 18.00, 'Food', 8),
+(22, 'Pecan Pie', 'Sweet pecan pie', 4.00, 'Desserts', 9),
+(23, 'Sashimi Platter', 'Assorted raw fish slices', 15.00, 'Food', 10),
+(24, 'Fettuccine Alfredo', 'Pasta in a creamy alfredo sauce', 10.50, 'Food', 11),
+(25, 'Veggie Burger', 'Plant-based burger patty', 8.50, 'Food', 12),
+(26, 'Caesar Salad', 'Crisp lettuce and croutons with Caesar dressing', 8.00, 'Food', 13),
+(27, 'Chicken Enchiladas', 'Chicken wrapped in corn tortillas', 9.75, 'Food', 14),
+(28, 'Chocolate Ice Cream', 'Rich chocolate ice cream', 2.50, 'Desserts', 15),
+(29, 'Espresso Macchiato', 'Espresso with a dollop of foam', 2.75, 'Beverages', 5),
+(30, 'Chamomile Tea', 'Soothing chamomile flowers', 2.25, 'Beverages', 6);
+
+
+-- Query to view all data from the 'Establishment' table
+SELECT * FROM Establishment;
+
+-- Query to view all data from the 'Product' table
+SELECT * FROM Product;
+
+-- Query to view all data from the 'user' table
+SELECT * FROM "user";
+
+-- Query to view all data from the 'Order' table
+SELECT * FROM "Order";
+
+-- Query to view all data from the 'Cart' table
+SELECT * FROM Cart;
+
+-- Query to view all data from the 'Payment' table
+SELECT * FROM Payment;
+
+-- Query to view all data from the 'Delivery' table
+SELECT * FROM Delivery;
+
+-- Query to view all data from the 'Review' table
+SELECT * FROM Review;
+
+-- Query to view all data from the 'Order_line' table
+SELECT * FROM Order_line;
+
+-- Adding a mini-market to 'Establishment'
+INSERT INTO Establishment (src_ID, name, location, description, opening_hrs, contact_info, rating, src_type) VALUES
+(16, 'Local Mini Market', '123 Market St', 'Convenient local market with a wide range of everyday items', '06:00-23:00', '520-620-7200', 4.3, 'M');
+
+-- Adding products related to the mini-market
+INSERT INTO Product (product_ID, prod_name, prod_desc, prod_price, prod_category, src_ID) VALUES
+(31, 'Bottled Water', '500ml natural spring water', 0.99, 'Beverages', 16),
+(32, 'Trail Mix', 'Mixed nuts and dried fruits, 200g', 3.45, 'Snacks', 16),
+(33, 'White Bread', 'Freshly baked white bread loaf', 2.50, 'Grocery', 16),
+(34, 'Milk', '1L whole milk carton', 1.25, 'Grocery', 16),
+(35, 'Canned Beans', '400g canned black beans', 1.50, 'Grocery', 16);
