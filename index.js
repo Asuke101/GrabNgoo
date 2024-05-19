@@ -41,7 +41,7 @@ app.get("/login", (req, res) => {
 app.get("/profile", async (req, res) => {
   const user_email = req.session.user_email;
   if (!user_email) {
-    return res.redirect("/logintest");
+    return res.redirect("/login");
   }
   try {
     const userResult = await pool.query(
@@ -79,10 +79,13 @@ app.post("/delete-account", async (req, res) => {
   const { delete_pwd } = req.body;
   const user_email = req.session.user_email;
   if (!user_email) {
-    return res.redirect("/logintest");
+    return res.redirect("/login");
   }
   try {
-    const userResult = await pool.query('SELECT * FROM "user" WHERE user_email = $1 AND user_pwd = $2', [user_email, delete_pwd]);
+    const userResult = await pool.query(
+      'SELECT * FROM "user" WHERE user_email = $1 AND user_pwd = $2',
+      [user_email, delete_pwd]
+    );
     if (userResult.rows.length > 0) {
       const user_id = userResult.rows[0].user_id;
 
@@ -114,10 +117,12 @@ app.post("/delete-account", async (req, res) => {
       await pool.query('DELETE FROM "review" WHERE user_id = $1', [user_id]);
 
       // Step 7: Delete the user
-      await pool.query('DELETE FROM "user" WHERE user_email = $1', [user_email]);
+      await pool.query('DELETE FROM "user" WHERE user_email = $1', [
+        user_email,
+      ]);
 
       req.session.destroy();
-      res.redirect("/logintest");
+      res.redirect("/login");
     } else {
       res.send("Invalid password. Account not deleted.");
     }
@@ -127,22 +132,28 @@ app.post("/delete-account", async (req, res) => {
   }
 });
 
-app.get('/product/:id/:type', async (req, res) => {
+app.get("/product/:id/:type", async (req, res) => {
   const { id, type } = req.params;
   try {
-    const restaurantResult = await pool.query('SELECT * FROM Establishment WHERE src_id = $1 AND src_type = $2', [id, type]);
-    const productsResult = await pool.query('SELECT * FROM product WHERE src_id = $1', [id]);
+    const restaurantResult = await pool.query(
+      "SELECT * FROM Establishment WHERE src_id = $1 AND src_type = $2",
+      [id, type]
+    );
+    const productsResult = await pool.query(
+      "SELECT * FROM product WHERE src_id = $1",
+      [id]
+    );
 
-    console.log('Restaurant:', restaurantResult.rows[0]);
-    console.log('Products:', productsResult.rows);
-    
-    res.render('product', {
+    console.log("Restaurant:", restaurantResult.rows[0]);
+    console.log("Products:", productsResult.rows);
+
+    res.render("product", {
       restaurant: restaurantResult.rows[0],
       products: productsResult.rows,
     });
   } catch (err) {
     console.error(err);
-    res.send('Error occurred');
+    res.send("Error occurred");
   }
 });
 
@@ -205,11 +216,15 @@ app.post("/checkout", async (req, res) => {
       [user_email]
     );
     if (userResult.rows.length === 0) {
-      return res.redirect("/logintest");
+      return res.redirect("/login");
     }
     const user = userResult.rows[0];
 
-    const totalCost = parseFloat(cart.reduce((sum, product) => sum + parseFloat(product.prod_price), 0).toFixed(2));
+    const totalCost = parseFloat(
+      cart
+        .reduce((sum, product) => sum + parseFloat(product.prod_price), 0)
+        .toFixed(2)
+    );
     const taxes = parseFloat((totalCost * 0.1).toFixed(2)); // Assuming a tax rate of 10%
     const finalTotal = parseFloat((totalCost + taxes).toFixed(2));
 
@@ -217,11 +232,11 @@ app.post("/checkout", async (req, res) => {
     req.session.invoice = {
       products: cart,
       credit_card: credit_card,
-      delivery: delivery === 'on',
+      delivery: delivery === "on",
       total_cost: finalTotal,
       taxes: taxes,
       user_fname: user.user_fname,
-      user_lname: user.user_lname
+      user_lname: user.user_lname,
     };
 
     // Clear the cart after saving invoice
@@ -234,8 +249,6 @@ app.post("/checkout", async (req, res) => {
     res.send("Error processing order");
   }
 });
-
-
 
 app.get("/invoice", (req, res) => {
   const invoice = req.session.invoice;
