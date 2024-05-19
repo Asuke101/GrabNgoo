@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart</title>
+  <!-- Include Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+    }
+    ul {
+      padding: 0;
+    }
+    li {
+      background-color: #fff;
+      margin-bottom: 20px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    p {
+      margin: 5px 0;
+      color: #555;
+    }
+    form {
+      display: inline;
+    }
+    button {
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .checkout-button {
+      background-color: #27ae60;
+    }
+    .checkout-button:hover {
+      background-color: #219a52;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Shopping Cart</h1>
+    {{#if cart.length}}
+      <ul class="list-unstyled">
+        {{#each cart}}
+          <li>
+            <h2>{{this.prod_name}}</h2>
+            <p>{{this.prod_desc}}</p>
+            <p>Price: ${{this.prod_price}}</p>
+            <p>Quantity: {{this.quantity}}</p>
+            <form action="/add-to-cart" method="POST">
+              <input type="hidden" name="product_id" value="{{this.product_id}}">
+              <button type="submit">Add</button>
+            </form>
+            <form action="/remove-from-cart" method="POST">
+              <input type="hidden" name="product_id" value="{{this.product_id}}">
+              <button type="submit">Remove</button>
+            </form>
+          </li>
+        {{/each}}
+      </ul>
+      <form action="/checkout" method="get">
+        <button type="submit" class="checkout-button">Proceed to Checkout</button>
+      </form>
+    {{else}}
+      <p>Your cart is empty.</p>
+    {{/if}}
+  </div>
+</body>
+</html>
