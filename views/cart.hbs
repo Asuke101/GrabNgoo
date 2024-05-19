@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shopping Cart</title>
-  <!-- Include Bootstrap CSS -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
@@ -55,6 +54,11 @@
     .checkout-button:hover {
       background-color: #219a52;
     }
+    a:hover { text-decoration: none;
+      color: #2980b9; }
+      .nav-links div {
+      margin-bottom: 10px;
+      }
   </style>
 </head>
 <body>
@@ -67,7 +71,6 @@
             <h2>{{this.prod_name}}</h2>
             <p>{{this.prod_desc}}</p>
             <p>Price: ${{this.prod_price}}</p>
-            <p>Quantity: {{this.quantity}}</p>
             <form action="/add-to-cart" method="POST">
               <input type="hidden" name="product_id" value="{{this.product_id}}">
               <button type="submit">Add</button>

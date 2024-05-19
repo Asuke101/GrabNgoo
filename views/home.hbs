@@ -1,109 +1,80 @@
-<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
-  <!-- Include Bootstrap CSS -->
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      padding: 20px;
-    }
-    h1, h2 {
-      color: #333;
-    }
-    h1 {
-      border-bottom: 2px solid #333;
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-    }
-    h2 {
-      margin-top: 30px;
-    }
-    ul {
-      padding: 0;
-    }
-    li {
-      background-color: #fff;
-      margin-bottom: 15px;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    li:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-    a {
-      color: #3498db;
-      font-size: 1.2em;
-    }
-    a:hover {
-      text-decoration: none;
-      color: #2980b9;
-    }
-    p {
-      margin: 5px 0;
-      color: #555;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1 class="text-center">Welcome, {{name}}</h1>
-    <a href="/profile">My Profile</a>
-    
-    <div class="row">
-      <div class="col-md-4">
-        <h2>Restaurants</h2>
-        <ul class="list-unstyled">
-          {{#each establishmentsR}}
-            <li>
-              <a href="/product/{{this.src_id}}/R">{{this.name}}</a>
-              <p><strong>Location:</strong> {{this.location}}</p>
-              <p><strong>Description:</strong> {{this.description}}</p>
-              <p><strong>Opening Hours:</strong> {{this.opening_hrs}}</p>
-              <p><strong>Contact Info:</strong> {{this.contact_info}}</p>
-              <p><strong>Rating:</strong> ⭐{{this.rating}}</p>
-            </li>
-          {{/each}}
-        </ul>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding:
+      20px; } h1, h2 { color: #333; } h1 { border-bottom: 2px solid #333;
+      padding-bottom: 10px; margin-bottom: 20px; } h2 { margin-top: 30px; } ul {
+      padding: 0; } li { background-color: #fff; margin-bottom: 15px; padding:
+      20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease; } li:hover {
+      transform: translateY(-5px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); } a
+      { color: #3498db; font-size: 1.2em; } a:hover { text-decoration: none;
+      color: #2980b9; } p { margin: 5px 0; color: #555; } .nav-links div {
+      margin-bottom: 10px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="text-center">Welcome, {{name}}</h1>
+      <div class="nav-links">
+        <div><a href="/profile">My Profile</a></div>
+        <div><a href="/cart">Go to my cart</a></div>
       </div>
-      <div class="col-md-4">
-        <h2>Cafes</h2>
-        <ul class="list-unstyled">
-          {{#each establishmentsC}}
-            <li>
-              <a href="/product/{{this.src_id}}/C">{{this.name}}</a>
-              <p><strong>Location:</strong> {{this.location}}</p>
-              <p><strong>Description:</strong> {{this.description}}</p>
-              <p><strong>Opening Hours:</strong> {{this.opening_hrs}}</p>
-              <p><strong>Contact Info:</strong> {{this.contact_info}}</p>
-              <p><strong>Rating:</strong> ⭐{{this.rating}}</p>
-            </li>
-          {{/each}}
-        </ul>
-      </div>
-      <div class="col-md-4">
-        <h2>Mini Marts</h2>
-        <ul class="list-unstyled">
-          {{#each establishmentsM}}
-            <li>
-              <a href="/product/{{this.src_id}}/M">{{this.name}}</a>
-              <p><strong>Location:</strong> {{this.location}}</p>
-              <p><strong>Description:</strong> {{this.description}}</p>
-              <p><strong>Opening Hours:</strong> {{this.opening_hrs}}</p>
-              <p><strong>Contact Info:</strong> {{this.contact_info}}</p>
-              <p><strong>Rating:</strong> ⭐{{this.rating}}</p>
-            </li>
-          {{/each}}
-        </ul>
+
+      <div class="row">
+        <div class="col-md-4">
+          <h2>Restaurants</h2>
+          <ul class="list-unstyled">
+            {{#each establishmentsR}}
+              <li>
+                <a href="/product/{{this.src_id}}/R">{{this.name}}</a>
+                <p><strong>Location:</strong> {{this.location}}</p>
+                <p><strong>Description:</strong> {{this.description}}</p>
+                <p><strong>Opening Hours:</strong> {{this.opening_hrs}}</p>
+                <p><strong>Contact Info:</strong> {{this.contact_info}}</p>
+                <p><strong>Rating:</strong> ⭐{{this.rating}}</p>
+              </li>
+            {{/each}}
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h2>Cafes</h2>
+          <ul class="list-unstyled">
+            {{#each establishmentsC}}
+              <li>
+                <a href="/product/{{this.src_id}}/C">{{this.name}}</a>
+                <p><strong>Location:</strong> {{this.location}}</p>
+                <p><strong>Description:</strong> {{this.description}}</p>
+                <p><strong>Opening Hours:</strong> {{this.opening_hrs}}</p>
+                <p><strong>Contact Info:</strong> {{this.contact_info}}</p>
+                <p><strong>Rating:</strong> ⭐{{this.rating}}</p>
+              </li>
+            {{/each}}
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h2>Mini Marts</h2>
+          <ul class="list-unstyled">
+            {{#each establishmentsM}}
+              <li>
+                <a href="/product/{{this.src_id}}/M">{{this.name}}</a>
+                <p><strong>Location:</strong> {{this.location}}</p>
+                <p><strong>Description:</strong> {{this.description}}</p>
+                <p><strong>Opening Hours:</strong> {{this.opening_hrs}}</p>
+                <p><strong>Contact Info:</strong> {{this.contact_info}}</p>
+                <p><strong>Rating:</strong> ⭐{{this.rating}}</p>
+              </li>
+            {{/each}}
+          </ul>
+        </div>
       </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>

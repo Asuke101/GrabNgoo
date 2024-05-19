@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Invoice</title>
   <style>
     body {
@@ -11,7 +12,7 @@
       background-color: #f4f4f4;
     }
 
-    h1, h2 {
+    h1 {
       text-align: center;
       color: #333;
     }
@@ -39,31 +40,47 @@
       border-bottom: none;
     }
 
-    h2 + p, h2 + ul {
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    h2 + ul, h2 + p {
       margin-top: 0;
     }
   </style>
 </head>
 <body>
   <h1>Invoice</h1>
-  <h2>Customer Information</h2>
-  <p>First Name: {{invoice.user_fname}}</p>
-  <p>Last Name: {{invoice.user_lname}}</p>
-  <h2>Ordered Products</h2>
+  <p>Thank you for your order, {{invoice.user_fname}} {{invoice.user_lname}}</p>
+  <p>Total Cost: ${{invoice.total_cost}}</p>
+  <p>Taxes: ${{invoice.taxes}}</p>
+  <p>Delivery: {{#if invoice.delivery}}Yes{{else}}No{{/if}}</p>
+  <p>Credit Card: {{invoice.masked_credit_card}}</p>
+
+  <h2>Products</h2>
   <ul>
     {{#each invoice.products}}
       <li>{{this.prod_name}} - ${{this.prod_price}}</li>
     {{/each}}
   </ul>
-  <h2>Payment Information</h2>
-  <p>Credit Card: {{invoice.masked_credit_card}}</p>
-  <h2>Delivery</h2>
-  <p>{{#if invoice.delivery}}Yes{{else}}No{{/if}}</p>
-  <h2>Taxes</h2>
-  <p>${{invoice.taxes}}</p>
-  <h2>Total Cost</h2>
-  <p>${{invoice.total_cost}}</p>
-  <h2>Thank You!</h2>
-  <p>Thank you for trusting GrabNGo!</p>
+
+  <h2>Review Your Restaurants</h2>
+  <ul>
+    {{#each invoice.restaurants}}
+      <li>
+        {{this.name}} - <a href="/review/{{this.src_id}}">Leave a review</a>
+      </li>
+    {{/each}}
+  </ul>
 </body>
 </html>

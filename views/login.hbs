@@ -17,6 +17,11 @@
       color: #333;
     }
 
+    h3 {
+      text-align: center;
+      color: #333;
+    }
+
     form {
       max-width: 400px;
       margin: 50px auto;
@@ -63,10 +68,30 @@
     a {
       color: #007bff;
     }
+
+    footer {
+      background-color: #ccc;
+      color: #333;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    footer h3 {
+      font-family: 'Arial', sans-serif;
+      font-size: 1.25em;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+      margin: 20px 0;
+      padding: 10px 0;
+      border-bottom: 2px solid #cccccc;
+      letter-spacing: 1px;
+    }
   </style>
 </head>
 <body>
   <h1>Login</h1>
+  <h1>GrabNGo</h1>
   <form action="/login" method="POST">
     <label for="email">Email:</label>
     <input type="email" id="email" name="user_email" required>
@@ -77,5 +102,9 @@
     <button type="submit">Login</button>
   </form>
   <p>Don't have an account? <a href="/signup">Sign up here</a></p>
+
+  <footer>
+    <h3>Achraf Bachiri Taoufiq MM//Fatim-Zahra Nazih</h3>
+  </footer>
 </body>
 </html>

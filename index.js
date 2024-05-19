@@ -1,3 +1,4 @@
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const session = require("express-session");
@@ -21,7 +22,7 @@ pool.connect((err) => {
   }
 });
 
-// Middleware
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   session({ secret: "secret-key", resave: false, saveUninitialized: true })
@@ -29,15 +30,16 @@ app.use(
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 
-// Root route
+
 app.get("/", (req, res) => {
   res.redirect("/login");
 });
 
-// Login route
+
 app.get("/login", (req, res) => {
   res.render("login");
 });
+
 app.get("/profile", async (req, res) => {
   const user_email = req.session.user_email;
   if (!user_email) {
@@ -59,7 +61,6 @@ app.get("/profile", async (req, res) => {
   }
 });
 
-// Update profile route
 app.post("/update-profile", async (req, res) => {
   const { user_fname, user_lname, user_email, user_pwd } = req.body;
   try {
@@ -67,6 +68,7 @@ app.post("/update-profile", async (req, res) => {
       'UPDATE "user" SET user_fname = $1, user_lname = $2, user_pwd = $3 WHERE user_email = $4',
       [user_fname, user_lname, user_pwd, user_email]
     );
+    logProfileUpdate(user_email);
     res.redirect("/profile");
   } catch (err) {
     console.error("Error updating user profile:", err);
@@ -74,7 +76,10 @@ app.post("/update-profile", async (req, res) => {
   }
 });
 
-// Delete account route
+function logProfileUpdate(user_email) {
+  console.log(`Profile updated for user: ${user_email}`);
+}
+
 app.post("/delete-account", async (req, res) => {
   const { delete_pwd } = req.body;
   const user_email = req.session.user_email;
@@ -89,37 +94,32 @@ app.post("/delete-account", async (req, res) => {
     if (userResult.rows.length > 0) {
       const user_id = userResult.rows[0].user_id;
 
-      // Step 1: Delete order lines referencing orders by this user
       await pool.query(
         'DELETE FROM "order_line" WHERE order_id IN (SELECT order_id FROM "Order" WHERE user_id = $1)',
         [user_id]
       );
 
-      // Step 2: Delete deliveries referencing orders by this user
       await pool.query(
         'DELETE FROM "delivery" WHERE order_id IN (SELECT order_id FROM "Order" WHERE user_id = $1)',
         [user_id]
       );
 
-      // Step 3: Delete payments referencing orders by this user
       await pool.query(
         'DELETE FROM "payment" WHERE order_id IN (SELECT order_id FROM "Order" WHERE user_id = $1)',
         [user_id]
       );
 
-      // Step 4: Delete orders referencing this user
       await pool.query('DELETE FROM "Order" WHERE user_id = $1', [user_id]);
 
-      // Step 5: Delete cart items referencing this user
       await pool.query('DELETE FROM "cart" WHERE user_id = $1', [user_id]);
 
-      // Step 6: Delete reviews referencing this user
       await pool.query('DELETE FROM "review" WHERE user_id = $1', [user_id]);
 
-      // Step 7: Delete the user
       await pool.query('DELETE FROM "user" WHERE user_email = $1', [
         user_email,
       ]);
+
+      logAccountDeletion(user_email);
 
       req.session.destroy();
       res.redirect("/login");
@@ -131,6 +131,10 @@ app.post("/delete-account", async (req, res) => {
     res.send("Error deleting account");
   }
 });
+
+function logAccountDeletion(user_email) {
+  console.log(`Account deleted for user: ${user_email}`);
+}
 
 app.get("/product/:id/:type", async (req, res) => {
   const { id, type } = req.params;
@@ -144,9 +148,6 @@ app.get("/product/:id/:type", async (req, res) => {
       [id]
     );
 
-    console.log("Restaurant:", restaurantResult.rows[0]);
-    console.log("Products:", productsResult.rows);
-
     res.render("product", {
       restaurant: restaurantResult.rows[0],
       products: productsResult.rows,
@@ -157,7 +158,6 @@ app.get("/product/:id/:type", async (req, res) => {
   }
 });
 
-// Handle add to cart POST request
 app.post("/add-to-cart", async (req, res) => {
   const { product_id } = req.body;
   if (!req.session.cart) {
@@ -179,7 +179,6 @@ app.post("/add-to-cart", async (req, res) => {
   }
 });
 
-// Handle remove from cart POST request
 app.post("/remove-from-cart", (req, res) => {
   const { product_id } = req.body;
   if (req.session.cart) {
@@ -190,17 +189,14 @@ app.post("/remove-from-cart", (req, res) => {
   res.redirect("/cart");
 });
 
-// Cart route
 app.get("/cart", (req, res) => {
   res.render("cart", { cart: req.session.cart });
 });
 
-// Checkout route
 app.get("/checkout", (req, res) => {
   res.render("checkout", { cart: req.session.cart });
 });
 
-// Handle checkout POST request
 app.post("/checkout", async (req, res) => {
   const { delivery, credit_card } = req.body;
   const cart = req.session.cart;
@@ -210,13 +206,13 @@ app.post("/checkout", async (req, res) => {
   }
 
   try {
-    const user_email = req.session.user_email; // Assuming user email is stored in session after login
+    const user_email = req.session.user_email;
     const userResult = await pool.query(
       'SELECT user_fname, user_lname FROM "user" WHERE user_email = $1',
       [user_email]
     );
     if (userResult.rows.length === 0) {
-      return res.redirect("/login");
+      return res.redirect("/logintest");
     }
     const user = userResult.rows[0];
 
@@ -225,10 +221,17 @@ app.post("/checkout", async (req, res) => {
         .reduce((sum, product) => sum + parseFloat(product.prod_price), 0)
         .toFixed(2)
     );
-    const taxes = parseFloat((totalCost * 0.1).toFixed(2)); // Assuming a tax rate of 10%
+    const taxes = parseFloat((totalCost * 0.1).toFixed(2));
     const finalTotal = parseFloat((totalCost + taxes).toFixed(2));
 
-    // Save invoice data in session
+    const restaurantPromises = cart.map((product) => {
+      return pool.query("SELECT * FROM Establishment WHERE src_id = $1", [
+        product.src_id,
+      ]);
+    });
+    const restaurantResults = await Promise.all(restaurantPromises);
+    const restaurants = restaurantResults.map((result) => result.rows[0]);
+
     req.session.invoice = {
       products: cart,
       credit_card: credit_card,
@@ -237,12 +240,11 @@ app.post("/checkout", async (req, res) => {
       taxes: taxes,
       user_fname: user.user_fname,
       user_lname: user.user_lname,
+      restaurants: restaurants,
     };
 
-    // Clear the cart after saving invoice
     req.session.cart = [];
 
-    // Redirect to invoice page
     res.redirect("/invoice");
   } catch (err) {
     console.error("Error processing order:", err);
@@ -257,14 +259,43 @@ app.get("/invoice", (req, res) => {
     return res.redirect("/checkout");
   }
 
-  // Mask credit card number
   const maskedCreditCard = `**** **** **** ${invoice.credit_card.slice(-4)}`;
   invoice.masked_credit_card = maskedCreditCard;
 
   res.render("invoice", { invoice });
 });
 
-// Handle login POST request
+app.get("/review/:id", (req, res) => {
+  const { id } = req.params;
+  res.render("review", { restaurant_id: id });
+});
+
+app.post("/review/:id", async (req, res) => {
+  const { id } = req.params;
+  const { rating, comment } = req.body;
+  const user_email = req.session.user_email;
+
+  try {
+    const userResult = await pool.query(
+      'SELECT user_id FROM "user" WHERE user_email = $1',
+      [user_email]
+    );
+    if (userResult.rows.length > 0) {
+      const user_id = userResult.rows[0].user_id;
+      await pool.query(
+        'INSERT INTO "review" (restaurant_id, user_id, rating, comment) VALUES ($1, $2, $3, $4)',
+        [id, user_id, rating, comment]
+      );
+      res.redirect("/invoice");
+    } else {
+      res.send("User not found");
+    }
+  } catch (err) {
+    console.error("Error submitting review:", err);
+    res.send("Error submitting review");
+  }
+});
+
 app.post("/login", async (req, res) => {
   const { user_email, user_pwd } = req.body;
 
@@ -306,12 +337,10 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Sign-up route
 app.get("/signup", (req, res) => {
   res.render("signup");
 });
 
-// Handle sign-up POST request
 app.post("/signup", async (req, res) => {
   const { user_fname, user_lname, user_email, user_pwd } = req.body;
 
@@ -322,6 +351,7 @@ app.post("/signup", async (req, res) => {
     );
 
     if (result.rows.length > 0) {
+      logSignup(user_email);
       res.redirect("/login");
     } else {
       res.send("Error signing up");
@@ -332,7 +362,10 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-// Start server
+function logSignup(user_email) {
+  console.log(`New user signed up: ${user_email}`);
+}
+
 const PORT = 4000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
